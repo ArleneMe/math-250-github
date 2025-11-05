@@ -1,26 +1,30 @@
 ---
 title: "math250_nov5_ArleneMedina"
 format: html
+embed-resources: true
 ---
-#Problem 1 
-#The first two problems in this set refer to the ISLR2::Carseats set, which includes simulated sample data for 400 stores selling a particular brand of child carseat. We view this data as a simple random sample from a larger population.
-#Does this data provide evidence against the company’s claim that the average price of their own seats is $110? Follow all best practices from class, including hypotheses, a relevant visualization, and a conclusion in non-technical language.
+# Problem 1 
+## The first two problems in this set refer to the ISLR2::Carseats set, which includes simulated sample data for 400 stores selling a particular brand of child carseat. We view this data as a simple random sample from a larger population.
+
+## Does this data provide evidence against the company’s claim that the average price of their own seats is $110? Follow all best practices from class, including hypotheses, a relevant visualization, and a conclusion in non-technical language.
 ```{r}
 library(ISLR2)
 library(tidyverse)
 glimpse(Carseats$Price)
 ```
 
-# Hypthesis: From just taking a quick glance at it's 400 rows and 11 respective columns. I would say that the average price of the carseats is more than $110 per seat. As well as from past/real life situations. 
+
+## Hypthesis: From just taking a quick glance at it's 400 rows and 11 respective columns. I would say that the average price of the carseats is more than $110 per seat. As well as from past/real life situations. 
 ```{r}
 summary(Carseats$Price)
 ```
 
-#Visualization that supports output of summary: 
+## Visualization that supports output of summary: 
 ```{r}
 ggplot(Carseats,aes(x = Price)) + 
   geom_histogram(color = "black",
-                 fill = "grey") +
+                 fill = "grey",
+                 bins = 25) + #so that the message error could be removed 
   geom_vline(aes(xintercept = 115.8, #previously mentioned in 
              color = "Actual Carseat Mean"))+ 
   geom_vline(aes(xintercept = 110, #previously mentioned in 
@@ -31,22 +35,22 @@ ggplot(Carseats,aes(x = Price)) +
   theme_minimal()
 ```
 
-#Conclusion (non-technical language): We can determine that the firms carseats average is more than what they claim it to be. Meaning that the carseats are on average more expensive than $110 that they claim. Instead they're 115.8. 
+## Conclusion (non-technical language): We can determine that the firms carseats average is more than what they claim it to be. Meaning that the carseats are on average more expensive than $110 that they claim. Instead they're 115.8. 
 
-#Problem 2: 
-#Compute a level 90% confidence interval for the mean competitor price in the population from which this sample is drawn. What is the sample mean? What is the margin of error?
+# Problem 2: 
+## Compute a level 90% confidence interval for the mean competitor price in the population from which this sample is drawn. What is the sample mean? What is the margin of error?
 ```{r}
 mean_competition_price <- mean(Carseats$CompPrice) #Learned from Professors vid "Confidence Intervals in R" 
 new_t_test <- t.test(Carseats$CompPrice, conf.level = .90)
 new_t_test #From the output we learned: 126.2391 - 124.975
 ```
-#The Marginal Error is: 1.2641
-#The Sample Mean is : 124.975
+## The Marginal Error is: 1.2641
+## The Sample Mean is : 124.975
 
-#Problem 3: Create a table with counts of penguin species and home islands in the penguins set. Include marginal counts in the table. 
+# Problem 3: Create a table with counts of penguin species and home islands in the penguins set. Include marginal counts in the table. 
 ```{r}
 t <- table(penguins$species, penguins$island)
 t
 addmargins(t) #Adding marginal counts
 ```
-#Problem 4: Push solution to Github page, including both both the Quarto Source and the rendered html. Use file names of the form, and provide clickable link. 
+# Problem 4: Push solution to Github page, including both both the Quarto Source and the rendered html. Use file names of the form, and provide clickable link. 
