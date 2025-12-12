@@ -1,0 +1,96 @@
+---
+title: "Problem 6_final"
+format: html
+---
+**Problem 5:**
+
+**What pattern I will explore on: If there was a pattern between songs happiness (as given) and their stay in number one spot in billboard.**
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+library(tidyverse)
+library(readxl)
+library(gt)
+ohio_sample_data <- read_excel("pressure.xlsx")
+```
+
+```{r}
+billboard_data_set <- read_excel("billboard.xlsx")
+```
+
+```{r}
+billboard_data <- billboard_data_set %>%
+  
+  mutate(happiness = as.numeric(happiness),
+         weeks_at_number_one = as.numeric( weeks_at_number_one)) %>%
+
+filter(!is.na(happiness) & !is.na(weeks_at_number_one))
+
+correlation <- cor(billboard_data$happiness, billboard_data$weeks_at_number_one)
+correlation
+```
+**Table:**
+```{r}
+#| fig-alt: Table is showing top 5 songs in happiness and followed by top 5 songs charting in the number one spot on billboard.
+biggest_happiness <- billboard_data %>%
+  arrange(desc(happiness), weeks_at_number_one) %>%
+  slice(1:5)
+
+longest_week <- billboard_data %>%
+  arrange(desc(weeks_at_number_one)) %>%
+  slice(1:5)
+table_biggest <- bind_rows(biggest_happiness %>% mutate(category = "Highest happines"),
+                           longest_week %>% mutate(category = "Longest Week")) %>%
+
+select(song,happiness, weeks_at_number_one)
+
+table_biggest
+```
+*Explanation of the Chart: Just from looking at both extremes of both categories (longest amount of weeks at number one for the last 75 years, and the songs with the highest amount of happiness), we can say that the more extreme happiness the less it tends to be in billboards number one spot, instead those with moderate happiness tend to stay longer.*[^1]
+
+**Plot 1:**
+```{r}
+#| fig-alt: This scatterplot is comparing the higest happiness vs song with the longest number one song. With x-axis being happiness and y being week in billboard.
+
+most_happy_songs <- billboard_data %>% arrange(desc(happiness)) %>% slice(1)
+longest_week_song <- billboard_data %>% arrange(desc(weeks_at_number_one)) %>% slice(1) #just to show the one extreme
+extremes <- bind_rows(most_happy_songs,longest_week_song) 
+
+ggplot(extremes, aes(x = happiness,
+                     y = weeks_at_number_one,
+                     color = song)) +
+  geom_point() +
+  geom_line(aes(group = 1), color = "black", linetype = "dashed") + #to connect both points through a dashed line.
+  labs (title = "Comparing Highest Happiness Vs Longest #1 songs", 
+        x = "Happiness",
+        y = "Week at Billboard top 1",
+        color = "Song")
+```
+*Explanation: As I wanted to explore the extremities of the song "What a fool believes" and compare it to the longest standing number one song I decided to create a scatter plot showing the difference between both, and decided to connect them together using a line to better show there's a major slope (difference).* 
+
+**Plot 2:**
+```{r}
+#| fig-alt: This chart is seperating a songs happiness from low,medium, and and high happiness, and is through a boxplot showing the difference in the own groups range and mean/avg.
+
+billboard_data <- billboard_data %>%
+  mutate(happines = case_when(happiness < 40 ~ "Low",
+                                  happiness <= 70 ~ "Medium", 
+                                  TRUE ~ "High"))
+ggplot(billboard_data, aes(x = happines,
+                           y = weeks_at_number_one)) +
+geom_boxplot(fill = "blue") +
+  labs (title = "Longentivity of #1 billboard (weeks) by Happiness Level", 
+        x = "Happiness",
+        y = "Week at Billboard top 1")
+```
+*Explanation This chart supports the pattern that if a songs happiness is moderate (in other words moderate) then it will mean that it has most changes of standing longer in the number one spot in the billboard list. On the other hand songs with extreme happiness are less likely to stand longer in the number one spor in the billboard list. This is evidently shown through the lines in the boxplots which are showing the average.* 
+
+
+**Final analysis: Overall I was able to support the idea that pop music or just music in general's success in billboard is not based on a songs amount of happiness it projects but rather other parts of the song like artist, lyrics, and maybe even genre. Through my two charts and table I was able to show how moderate happiness songs tends to have the best outcome, supporting the ongoing investigation and realization that in todays society, people are attracted and engage in things (like music) that they can relate to, and that people in today's society are more intuiative to their own feelings.**[^2]
+
+## Resources that further support question four pattern/study:
+
+[^1]:[Smooth Radio: Pop Music getting sadder](https://www.smoothradio.com/news/music/pop-music-getting-sadder/) 
+
+[^2]:[Aeon: Why pop songs are getting sadder](https://aeon.co/ideas/why-are-pop-songs-getting-sadder-than-they-used-to-be)
